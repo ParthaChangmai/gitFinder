@@ -9,6 +9,7 @@ const GITHUB_URL = 'https://api.github.com';
 export const GithubProvider = ({ children }) => {
 	const initialState = {
 		users: [],
+		user: {},
 		loading: false,
 	};
 	const [state, dispatch] = useReducer(githubReducer, initialState);
@@ -20,6 +21,28 @@ export const GithubProvider = ({ children }) => {
 		dispatch({
 			type: 'GET_USERS',
 			payload: res.data.items,
+		});
+	};
+	//Get Users
+	const getUser = async (login) => {
+		setLoading();
+
+		const res = await axios.get(`${GITHUB_URL}/users/${login}`);
+
+		dispatch({
+			type: 'GET_USER',
+			payload: res.data,
+		});
+	};
+
+	const getRepos = async (login) => {
+		setLoading();
+
+		const res = await axios.get(`${GITHUB_URL}/users/${login}/repos`);
+
+		dispatch({
+			type: 'GET_REPOS',
+			payload: res.data,
 		});
 	};
 
@@ -40,8 +63,12 @@ export const GithubProvider = ({ children }) => {
 			value={{
 				users: state.users,
 				loading: state.loading,
+				user: state.user,
+				repos: state.repo,
 				SearchUsers,
 				clearUsers,
+				getUser,
+				getRepos,
 			}}
 		>
 			{children}
